@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title> Cobrinha </title>
+    <style>
+        #quadro {
+            border: 1px solid #000;
+            background: pink;
+        }
+        #placar {
+            font-family: Arial, sans-serif;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="placar">Pontos: <span id="pontos">0</span></div>
+    <canvas id="quadro" width="300" height="300"></canvas>
+    <script>
+        var canvas = document.getElementById("quadro");           
+        var ctx = canvas.getContext("2d");    // definir que o canvas vai ser 2d  
+
+        var tamanho = 15;  // tamanho do quadradinho da cobra e da comidinha (quadrados)
+        var snake = [{x: 75, y: 75}];  //começo da cobrinha, com um quadradinho no inciio 
+        var direcao = {x: 15, y: 0};  //direção incial (para ela andar para a direita...) 
+
+        var comida = {
+            x: Math.floor(Math.random() * (canvas.width / tamanho)) * tamanho,   //isso vai fazer com que a comidinha vá em um lugar aleatorio a cada ponto
+            y: Math.floor(Math.random() * (canvas.height / tamanho)) * tamanho
+        };
+
+        var pontos = 0;  // começando com zero pontos 
+
+        function desenha() {   // vai rodar o jogo 
+            ctx.clearRect(0, 0, canvas.width, canvas.height);  // limpa a tela 
+
+            // desenha a comida
+            ctx.fillStyle = "brown";
+            ctx.fillRect(comida.x, comida.y, tamanho, tamanho);
+
+            // desenha a cobrinha
+            ctx.fillStyle = "red";
+            for (var i = 0; i < snake.length; i++) {           //""enquanto ouver jogo, desenhe a cobrinha no canvas tanana""
+                ctx.fillRect(snake[i].x, snake[i].y, tamanho, tamanho);     // posição x da cobrinha, a y, 1°tamanho: largura e 2°tamanho: altura
+            }
+ 
+                       var cabeca = {
+                x: snake[0].x + direcao.x,  //   movimenta a cobrinha (velocidade e direção)
+                y: snake[0].y + direcao.y
+            };
+
+            if (cabeca.x < 0 || cabeca.y < 0 || cabeca.x >= canvas.width || cabeca.y >= canvas.height) {  // colisão com parede
+                alert("fim de jogo! pontuação final: " + pontos); //alerta avisando os pontos apos acabar o jogo pela colisao 
+                document.location.reload();  // vai recarregar o jogo 
+                return;
+            }
+
+            for (var i = 0; i < snake.length; i++) {
+                if (cabeca.x === snake[i].x && cabeca.y === snake[i].y) { // colisão com o próprio corpo----- verifica se a cabeça se bateu em algum lugar do corpo -
+               //  se a cobrinha se "morder"
+                    alert("Você se bateu! Pontuação: " + pontos);
+                    document.location.reload();
+                    return;                                                                                             
+                }
+            }
+
+            snake.unshift(cabeca);   // adiciona os elementos na array 
+
+            // se comer a comidinha
+            if (cabeca.x === comida.x && cabeca.y === comida.y) {   // nisso ele checa se a posiçao da cabeça da cobra é igual a posição da comida
+                pontos++;  // soma +1 ponto 
+                document.getElementById("pontos").innerText = pontos; // atualiza o placar da tela, mostrando os novos pontos 
+                comida.x = Math.floor(Math.random() * (canvas.width / tamanho)) * tamanho;  // lugar aletorio pra comidinha depois do novo ponto
+                comida.y = Math.floor(Math.random() * (canvas.height / tamanho)) * tamanho; // no height depois do width 
+            } else {
+                snake.pop(); // o pop impede que ela ganhe um novo quadradinho quando ela anda, assim ela só vai +1 quando ela comer a comida
+            }
+        }
+
+        setInterval(desenha, 100);   
+
+        document.addEventListener("keydown", function(e) {  // faz com que a cobra seja controlada pelo teclado do ususrio
+            // addeventlistener serve pra ""escutar"" o que o usuario faz
+            if (e.keyCode === 37 && direcao.x === 0) direcao = {x: -tamanho, y: 0}; // esquerda 
+            if (e.keyCode === 38 && direcao.y === 0) direcao = {x: 0, y: -tamanho}; // cima
+            if (e.keyCode === 39 && direcao.x === 0) direcao = {x: tamanho, y: 0};  // direita
+            if (e.keyCode === 40 && direcao.y === 0) direcao = {x: 0, y: tamanho};  // baixo
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
